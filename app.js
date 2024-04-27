@@ -9,6 +9,7 @@ const app = express();
 
 
 app.use(
+    cors,
     bodyParser.json(),
     express.static(path.join(__dirname, 'public')),
     mainRoute,

@@ -6,19 +6,34 @@ const sendAllGames = async (request, response, next) => {
 };
 
 
-const deleteGame = async (response, request, next) => {
-    request.games =  await readData("./data/games.json");
-    const id = Number(request.params.id);
-    request.game = request.games.find((item) => item.id === id);
-    const index = request.games.findIndex((item) => item.id === request.game.id);
-    request.games.splice(index, 1);
-    await writeData("./data/games.json", req.games);
-    response.send({
-        games: request.games,
-        update: request.games
-    })
-};
+const deleteGame = async (req, res) => {
+    // Получим данные из файла
+    const games = await readData("./data/games.json");
+    if (!games) {
+        res.status(400);
+        res.send({
+            status: "error",
+            message: "Нет игр в базе данных. Добавьте игру.",
+        });
+        return;
+    }
+    req.games = games;
 
+    const id = Number(req.params.id);
+
+    req.game = req.games.find((item) => item.id === id);
+
+    const index = req.games.findIndex((item) => item.id === req.game.id);
+
+    req.games.splice(index, 1);
+
+    await writeData("./data/games.json", req.games);
+
+    res.send({
+        games: req.games,
+        updated: req.game
+    });
+}
 const addGameController = async (req, res, next) => {
     req.isNew = !Boolean(req.games.find(item => item.title === req.body.title));
     if (req.isNew) {

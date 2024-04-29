@@ -1,13 +1,13 @@
-const {writeData} = require("../utils/data");
+const {writeData, readData} = require("../utils/data");
 
-const sendAllGames = async (request, response) => {
-    request.games = games;
+const sendAllGames = async (request, response, next) => {
+    request.games =  await readData("./data/games.json");
     response.send(request.games)
 };
 
 
-const deleteGame = async (response, request) => {
-    request.games = games;
+const deleteGame = async (response, request, next) => {
+    request.games =  await readData("./data/games.json");
     const id = Number(request.params.id);
     request.game = request.games.find((item) => item.id === id);
     const index = request.games.findIndex((item) => item.id === request.game.id);
@@ -19,7 +19,7 @@ const deleteGame = async (response, request) => {
     })
 };
 
-const addGameController = async (req, res) => {
+const addGameController = async (req, res, next) => {
     req.isNew = !Boolean(req.games.find(item => item.title === req.body.title));
     if (req.isNew) {
         const inArray = req.games.map(item => Number(item.id));

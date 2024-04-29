@@ -1,26 +1,12 @@
 const {writeData, readData} = require("../utils/data");
 
-const sendAllGames = async (request, response, next) => {
-    request.games =  await readData("./data/games.json");
-    response.send(request.games)
+const sendAllGames = async (req, res, next) => {
+    res.send(req.games)
 };
 
 
-const deleteGame = async (req, res) => {
-    // Получим данные из файла
-    const games = await readData("./data/games.json");
-    if (!games) {
-        res.status(400);
-        res.send({
-            status: "error",
-            message: "Нет игр в базе данных. Добавьте игру.",
-        });
-        return;
-    }
-    req.games = games;
-
+const deleteGame = async (req, res, next) => {
     const id = Number(req.params.id);
-
     req.game = req.games.find((item) => item.id === id);
 
     const index = req.games.findIndex((item) => item.id === req.game.id);
@@ -63,8 +49,17 @@ const addGameController = async (req, res, next) => {
         updated: req.updatedObject
     });
 };
+
+const sendUpdatedGames = (req, res) => {
+    res.send({
+        games: req.games,
+        updated: req.updatedObject
+    });
+};
+
 module.exports = {
     deleteGame,
     sendAllGames,
-    addGameController
+    addGameController,
+    sendUpdatedGames
 }
